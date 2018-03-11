@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -11,7 +13,28 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	w.Write([]byte("Hello from Snippetbox"))
+
+	// Initialize a slice containing the paths to the files.
+	files := []string{
+		"./ui/html/base.html",
+		"./ui/html/home.page.html",
+	}
+
+	// Use the template.ParseFiles() function to read the files and store the
+	// templates in a template set.
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+		return
+	}
+
+	// Use ExecuteTemplate() method to execute "base" template.
+	err = ts.ExecuteTemplate(w, "base", nil)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "Internal Server Error", 500)
+	}
 }
 
 func ShowSnippet(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +48,7 @@ func ShowSnippet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Use the fmt.Fprint() function to interpolate the id value with our response
+	// Use the fmt.Fprintf() function to interpolate the id value with our response
 	// and write it to the http.ResponseWriter.
 	fmt.Fprintf(w, "Display a specific snippit (ID %d)...", id)
 }
