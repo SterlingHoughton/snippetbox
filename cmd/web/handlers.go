@@ -8,7 +8,7 @@ import (
 
 func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		app.NotFound(w, r)
+		app.NotFound(w)
 		return
 	}
 
@@ -22,7 +22,7 @@ func (app *App) ShowSnippet(w http.ResponseWriter, r *http.Request) {
 	// Not Found response.
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
-		app.NotFound(w, r)
+		app.NotFound(w)
 		return
 	}
 
