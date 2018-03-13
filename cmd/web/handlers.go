@@ -2,40 +2,17 @@ package main
 
 import (
 	"fmt"
-	"html/template"
-	"log"
 	"net/http"
-	"path/filepath"
 	"strconv"
 )
 
 func (app *App) Home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		app.NotFound(w, r)
 		return
 	}
 
-	// Initialize a slice containing the paths to the files.
-	files := []string{
-		filepath.Join(app.HTMLDir, "base.html"),
-		filepath.Join(app.HTMLDir, "home.page.html"),
-	}
-
-	// Use the template.ParseFiles() function to read the files and store the
-	// templates in a template set.
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, "Internal Server Error", 500)
-		return
-	}
-
-	// Use ExecuteTemplate() method to execute "base" template.
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, "Internal Server Error", 500)
-	}
+	app.RenderHTML(w, "home.page.html")
 }
 
 func (app *App) ShowSnippet(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +22,7 @@ func (app *App) ShowSnippet(w http.ResponseWriter, r *http.Request) {
 	// Not Found response.
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
-		http.NotFound(w, r)
+		app.NotFound(w, r)
 		return
 	}
 
